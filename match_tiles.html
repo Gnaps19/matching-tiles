@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matching Tiles Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-template-rows: repeat(4, 100px);
+      gap: 10px;
+      margin-top: 30px;
+      justify-content: center;
+    }
+
+    .tile {
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+      border-radius: 5px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Customize the look of matched tiles */
+    .tile.matched {
+      background-color: #33cc33;
+      cursor: default;
+    }
+
+    /* Add a new style for the wrong tiles */
+    .tile.wrong {
+      background-color: #ff6666;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <h1>Matching Tiles Game</h1>
+  <div class="game-board" id="gameBoard"></div>
+
+  <script>
+    const tiles = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    let firstTile = null;
+    let secondTile = null;
+    let canFlip = true;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function createTile(tileValue) {
+      const tile = document.createElement('div');
+      tile.classList.add('tile');
+      tile.textContent = tileValue;
+      tile.addEventListener('click', () => flipTile(tile));
+      return tile;
+    }
+
+    function flipTile(tile) {
+      if (!canFlip || tile === firstTile || tile.classList.contains('matched')) {
+        return;
+      }
+
+      tile.classList.add('flipped');
+
+      if (!firstTile) {
+        firstTile = tile;
+      } else {
+        secondTile = tile;
+        checkTiles();
+      }
+    }
+
+    function checkTiles() {
+      canFlip = false;
+
+      if (firstTile.textContent === secondTile.textContent) {
+        setTimeout(() => {
+          firstTile.classList.add('matched');
+          secondTile.classList.add('matched');
+          resetTiles();
+        }, 500);
+      } else {
+        setTimeout(() => {
+          firstTile.classList.add('wrong'); // Mark the first tile as wrong
+          secondTile.classList.add('wrong'); // Mark the second tile as wrong
+          showDoesntMatch(); // Show "Doesn't Match" message
+        }, 1000);
+      }
+    }
+
+    function showDoesntMatch() {
+      setTimeout(() => {
+        firstTile.classList.remove('flipped', 'wrong');
+        secondTile.classList.remove('flipped', 'wrong');
+        resetTiles();
+      }, 1000);
+    }
+
+    function resetTiles() {
+      firstTile = null;
+      secondTile = null;
+      canFlip = true;
+    }
+
+    function initializeGame() {
+      shuffle(tiles);
+      const gameBoard = document.getElementById('gameBoard');
+
+      tiles.forEach(tileValue => {
+        const tile = createTile(tileValue);
+        gameBoard.appendChild(tile);
+      });
+    }
+
+    initializeGame();
+  </script>
+</body>
+</html>
+
+
+
